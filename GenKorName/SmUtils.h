@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <random>
 #include <stdio.h>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +47,14 @@ namespace sm
 		}
 
 		return result;
+	}
+
+	int getRandom(int min, int max)
+	{
+		std::random_device rand_device;
+		std::mt19937 rand_gen(rand_device());
+		std::uniform_int_distribution<int> distrib(min, max - 1);
+		return distrib(rand_gen);
 	}
 }
 

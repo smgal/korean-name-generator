@@ -20,7 +20,7 @@ int main(void)
 	assert(namer);
 
 	for (int i = 0; i < NUM_RESULTS; i++)
-		printf("[%2d] %s\n", namer->nameSomeone().c_str());
+		printf("[%2d] %s\n", i, namer->nameSomeone().c_str());
 
 #if defined(_MSC_VER)
 	system("pause");
