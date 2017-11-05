@@ -15,7 +15,9 @@ namespace
 
 int main(void)
 {
-	std::unique_ptr<KoreanNamer> namer(KoreanNamer::create(NAME_LIST_FILE));
+	std::vector<std::string> text_list = sm::makeStringListFromFile(NAME_LIST_FILE);
+
+	std::unique_ptr<KoreanNamer> namer(KoreanNamer::create(text_list));
 
 	assert(namer);
 
