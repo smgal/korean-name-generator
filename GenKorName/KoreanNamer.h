@@ -15,10 +15,9 @@
 
 class KoreanNamer
 {
-	enum
-	{
-		_ORDER = 3
-	};
+	static const int  _ORDER = 3;
+	static const char _DELIMITER = '$';
+	static const int  _MAX_LEN = 16;
 
 	struct Ngram
 	{
@@ -56,7 +55,7 @@ public:
 					assert(p_ngram_map != p_inst->_ngram_map.end());
 				}
 
-				char ch = (j + _ORDER < p_text->size()) ? (*p_text)[j + _ORDER] : ' ';
+				char ch = (j + _ORDER < p_text->size()) ? (*p_text)[j + _ORDER] : _DELIMITER;
 
 				auto p_char_map = p_ngram_map->second.id_map.find(ch);
 				if (p_char_map != p_ngram_map->second.id_map.end())
@@ -71,10 +70,53 @@ public:
 		return p_inst;
 	}
 
-	std::string nameSomeone(void) const
+	std::string nameSomeone(int (*fn_getRandom)(int n)) const
 	{
-		// TODO: ...
-		return "";
+		std::string result = "";
+
+		{
+			int match_count = fn_getRandom(_num_ngrams);
+
+			auto p_ngram_map = _ngram_map.begin();
+			for (; p_ngram_map != _ngram_map.end(); p_ngram_map++)
+			{
+				if (p_ngram_map->second.is_head && match_count-- == 0)
+				{
+					result += p_ngram_map->first;
+					break;
+				}
+			}
+
+			assert(result.size() > 0);
+		}
+
+		while (*result.rbegin() != _DELIMITER)
+		{
+			auto p_ngram_map = _ngram_map.find(result.substr(result.size() - _ORDER));
+			assert(p_ngram_map != _ngram_map.end());
+
+			int matched = fn_getRandom(_num_ngrams);
+			int count = 0;
+
+			auto p_char_map = p_ngram_map->second.id_map.begin();
+			for (; p_char_map != p_ngram_map->second.id_map.end(); p_char_map++)
+			{
+				count += p_char_map->second;
+				if (count >= matched)
+				{
+					result += p_char_map->first;
+					break;
+				}
+			}
+
+			if (result.size() >= _MAX_LEN)
+				break;
+		}
+
+		assert(result.size() > 0);
+		assert(*result.rbegin() == _DELIMITER);
+
+		return result.substr(0, result.size() - 1);
 	}
 
 private:

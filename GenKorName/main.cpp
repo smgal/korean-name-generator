@@ -10,7 +10,7 @@
 namespace
 {
 	const char* NAME_LIST_FILE = "korean_name_to_be_learned.txt";
-	const int   NUM_RESULTS = 10;
+	const int   NUM_RESULTS = 10000;
 }
 
 int main(void)
@@ -22,7 +22,12 @@ int main(void)
 	assert(namer);
 
 	for (int i = 0; i < NUM_RESULTS; i++)
-		printf("[%2d] %s\n", i, namer->nameSomeone().c_str());
+	{
+		std::string name = namer->nameSomeone(sm::getRandom);
+		bool not_found = std::find(text_list.begin(), text_list.end(), name) == text_list.end();
+
+		printf("[%2d] %s %s\n", i, name.c_str(), not_found ? "(new)" : "");
+	}
 
 #if defined(_MSC_VER)
 	system("pause");

@@ -49,11 +49,11 @@ namespace sm
 		return result;
 	}
 
-	int getRandom(int min, int max)
+	int getRandom(int n)
 	{
 		std::random_device rand_device;
 		std::mt19937 rand_gen(rand_device());
-		std::uniform_int_distribution<int> distrib(min, max - 1);
+		std::uniform_int_distribution<int> distrib(0, n - 1);
 		return distrib(rand_gen);
 	}
 }
