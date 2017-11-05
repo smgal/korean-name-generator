@@ -31,5 +31,10 @@
 *.out
 *.app
 *.suo
-GenKorName.VC.db
-/Debug
+
+# Additional
+*.pdb
+*.db
+*/x86
+*/x64
+*/Debug
