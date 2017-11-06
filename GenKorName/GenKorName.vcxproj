@@ -148,6 +148,10 @@
     <ClInclude Include="KoreanNamer.h" />
     <ClInclude Include="SmUtils.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="fantasy_name_to_be_learned.txt" />
+    <Text Include="korean_name_to_be_learned.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

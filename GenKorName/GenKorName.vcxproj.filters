@@ -7,4 +7,17 @@
     <ClInclude Include="SmUtils.h" />
     <ClInclude Include="KoreanNamer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="resource">
+      <UniqueIdentifier>{4c6111dc-62c3-4c43-86c8-80bc93af1fa7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="korean_name_to_be_learned.txt">
+      <Filter>resource</Filter>
+    </Text>
+    <Text Include="fantasy_name_to_be_learned.txt">
+      <Filter>resource</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

@@ -23,6 +23,39 @@ namespace sm
 
 		if (file)
 		{
+			{
+				bool verified = false;
+
+				fseek(file, 0, SEEK_END);
+				int file_len = ftell(file);
+				fseek(file, 0, SEEK_SET);
+
+				if (file_len >= 4)
+				{
+					unsigned char BOM_ID[4];
+					fread(BOM_ID, 1, sizeof(BOM_ID), file);
+					fseek(file, 0, SEEK_SET);
+
+					// EF BB BF -> UTF-8
+					if (BOM_ID[0] == 0xEF && BOM_ID[1] == 0xBB && BOM_ID[2] == 0xBF)
+					{
+						fseek(file, 3, SEEK_SET);
+						verified = true;
+					}
+
+					// 00 00 FE FF	-> UTF-32(BE)
+					// FF FE 00 00	-> UTF-32(LE)
+					// FE FF -> UTF-16(BE)
+					// FF FE -> UTF-16(LE)
+				}
+
+				if (!verified)
+				{
+					fclose(file);
+					return std::vector<std::string>();
+				}
+			}
+
 			std::string s;
 			int ch;
 

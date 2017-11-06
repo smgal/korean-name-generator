@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <algorithm>
 #include <cassert>
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +18,7 @@ class KoreanNamer
 {
 	static const int  _ORDER = 3;
 	static const char _DELIMITER = '$';
-	static const int  _MAX_LEN = 16;
+	static const int  _MAX_LEN = 100;
 
 	struct Ngram
 	{
@@ -32,8 +33,16 @@ class KoreanNamer
 	};
 
 public:
-	static KoreanNamer* create(const std::vector<std::string>& texts)
+	static KoreanNamer* create(const std::vector<std::string>& _texts)
 	{
+		std::vector<std::string> texts;
+		{
+			std::for_each(_texts.begin(), _texts.end(), [&texts](const std::string k_str)
+			{
+				texts.push_back(_convKorToEng(k_str));
+			});
+		}
+
 		KoreanNamer* p_inst = new KoreanNamer;
 
 		auto p_text = texts.begin();
@@ -116,7 +125,7 @@ public:
 		assert(result.size() > 0);
 		assert(*result.rbegin() == _DELIMITER);
 
-		return result.substr(0, result.size() - 1);
+		return _convEngToKor(result.substr(0, result.size() - 1));
 	}
 
 private:
@@ -128,6 +137,52 @@ private:
 private:
 	int _num_ngrams;
 	std::map<std::string, Ngram> _ngram_map;
+
+	static std::string _convKorToEng(const std::string& kor)
+	{
+/*
+		std::string result;
+
+		if ((kor[0] & 0xF0) == 0xE0 && (kor[1] & 0xC0) == 0x80 && (kor[2] & 0xC0) == 0x80)
+		{
+			typedef unsigned int uint;
+			uint code = uint(kor[0] & 0x0F) << 12 | uint(kor[1] & 0x3F) << 6 | uint(kor[2] & 0x3F);
+
+			if (code >= 0xAC00 && code <= 0xD7A3)
+			{
+				std::vector<std::string> QQ[3] =
+				{
+					{ "r","R","s","e","E","f","a","q","Q","t","T","d","w","W","c","z","x","v","g" },
+					{ "k","o","i","O","j","p","u","P","h","hk","ho","hl","y","n","nj","np","nl","b","m","ml","l" },
+					{ " ","r","R","rt","s","sw","sg","e","f","fr","fa","fq","ft","fx","fv","fg","a","q","qt","t","T","d","w","c","z","x","v","g" }
+				};
+
+				// ぁあいぇえぉけげこさざしじすずせぜそぞ
+				const int MAX_SM1 = 19;
+				// ただちぢっつづてでとどなにぬねのはばぱひび
+				const int MAX_SM2 = 21;
+				//   ぁあぃいぅうぇぉおかがきぎくぐけげごさざしじずせぜそぞ
+				const int MAX_SM3 = 28;
+
+				code -= 0xAC00;
+
+				uint SM1 = code / (MAX_SM2 * MAX_SM3);
+				uint SM2 = (code - SM1 * (MAX_SM2 * MAX_SM3)) / MAX_SM3;
+				uint SM3 = code - SM1 * (MAX_SM2 * MAX_SM3) - SM2 * MAX_SM3;
+
+				result += QQ[0][SM1];
+				result += QQ[1][SM2];
+				result += QQ[2][SM3];
+			}
+		}
+*/
+		return kor;
+	}
+
+	static std::string _convEngToKor(const std::string& eng)
+	{
+		return eng;
+	}
 
 };
 
