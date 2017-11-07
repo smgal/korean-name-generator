@@ -13,50 +13,98 @@
 
 namespace
 {
+	typedef unsigned int uint;
+
 	std::string _convKorToEng(const std::string& kor)
 	{
-		/*
+		// Korean word only
+		assert((kor.size() % 3) == 0);
+
 		std::string result;
 
-		if ((kor[0] & 0xF0) == 0xE0 && (kor[1] & 0xC0) == 0x80 && (kor[2] & 0xC0) == 0x80)
+		const char* p_ch = kor.c_str();
+		const char* p_ch_end = p_ch + kor.length();
+
+		while (p_ch < p_ch_end)
 		{
-		typedef unsigned int uint;
-		uint code = uint(kor[0] & 0x0F) << 12 | uint(kor[1] & 0x3F) << 6 | uint(kor[2] & 0x3F);
+			assert((p_ch[0] & 0xF0) == 0xE0 && (p_ch[1] & 0xC0) == 0x80 && (p_ch[2] & 0xC0) == 0x80);
 
-		if (code >= 0xAC00 && code <= 0xD7A3)
-		{
-		std::vector<std::string> QQ[3] =
-		{
-		{ "r","R","s","e","E","f","a","q","Q","t","T","d","w","W","c","z","x","v","g" },
-		{ "k","o","i","O","j","p","u","P","h","hk","ho","hl","y","n","nj","np","nl","b","m","ml","l" },
-		{ " ","r","R","rt","s","sw","sg","e","f","fr","fa","fq","ft","fx","fv","fg","a","q","qt","t","T","d","w","c","z","x","v","g" }
-		};
+			uint code = uint(p_ch[0] & 0x0F) << 12 | uint(p_ch[1] & 0x3F) << 6 | uint(p_ch[2] & 0x3F);
 
-		// ぁあいぇえぉけげこさざしじすずせぜそぞ
-		const int MAX_SM1 = 19;
-		// ただちぢっつづてでとどなにぬねのはばぱひび
-		const int MAX_SM2 = 21;
-		//   ぁあぃいぅうぇぉおかがきぎくぐけげごさざしじずせぜそぞ
-		const int MAX_SM3 = 28;
+			assert(code >= 0xAC00 && code <= 0xD7A3);
 
-		code -= 0xAC00;
+			{
+				std::vector<std::string> SMGAL[3] =
+				{
+					{ "r","R","s","e","E","f","a","q","Q","t","T","d","w","W","c","z","x","v","g" },
+					{ "k","o","i","O","j","p","u","P","h","hk","ho","hl","y","n","nj","np","nl","b","m","ml","l" },
+					{ "_","r","R","rt","s","sw","sg","e","f","fr","fa","fq","ft","fx","fv","fg","a","q","qt","t","T","d","w","c","z","x","v","g" }
+				};
 
-		uint SM1 = code / (MAX_SM2 * MAX_SM3);
-		uint SM2 = (code - SM1 * (MAX_SM2 * MAX_SM3)) / MAX_SM3;
-		uint SM3 = code - SM1 * (MAX_SM2 * MAX_SM3) - SM2 * MAX_SM3;
+				// ぁあいぇえぉけげこさざしじすずせぜそぞ
+				const int MAX_SM1 = 19;
+				// ただちぢっつづてでとどなにぬねのはばぱひび
+				const int MAX_SM2 = 21;
+				//   ぁあぃいぅうぇぉおかがきぎくぐけげごさざしじずせぜそぞ
+				const int MAX_SM3 = 28;
 
-		result += QQ[0][SM1];
-		result += QQ[1][SM2];
-		result += QQ[2][SM3];
+				code -= 0xAC00;
+
+				const uint SM1 = code / (MAX_SM2 * MAX_SM3);
+				const uint SM2 = (code - SM1 * (MAX_SM2 * MAX_SM3)) / MAX_SM3;
+				const uint SM3 = code - SM1 * (MAX_SM2 * MAX_SM3) - SM2 * MAX_SM3;
+
+				result += SMGAL[0][SM1];
+				result += SMGAL[1][SM2];
+				result += SMGAL[2][SM3];
+			}
+
+			p_ch += 3;
 		}
-		}
-		*/
-		return kor;
+
+		return result;
 	}
 
 	std::string _convEngToKor(const std::string& eng)
 	{
 		return eng;
+
+		// TODO:
+		std::string result;
+
+		const char* p_ch = eng.c_str();
+		const char* p_ch_end = p_ch + eng.length();
+
+		uint SM1 = 0, SM2 = 0, SM3 = 0;
+		int state = 0;
+
+		while (p_ch < p_ch_end)
+		{
+			char ch1 = *p_ch;
+			char ch2 = (p_ch + 1 < p_ch_end) ? *p_ch : '$';
+
+			const char* JA_1ST = "rRseEfaqQtTdwWczxvg";
+			const char* JA_1ST_END = JA_1ST + strlen(JA_1ST);
+
+			switch (state)
+			{
+			case 0:
+				{
+					auto a = std::find(JA_1ST, JA_1ST_END, ch1);
+					SM1 = a - JA_1ST;
+					state++;
+				}
+				break;
+			case 1:
+				break;
+			case 2:
+				break;
+			default:
+				assert(false);
+			}
+		}
+
+		return result;
 	}
 }
 

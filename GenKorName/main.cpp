@@ -9,8 +9,8 @@
 
 namespace
 {
-	//const char* NAME_LIST_FILE = "korean_name_to_be_learned.txt";
-	const char* NAME_LIST_FILE = "fantasy_name_to_be_learned.txt";
+	const char* NAME_LIST_FILE = "korean_name_to_be_learned.txt";
+	//const char* NAME_LIST_FILE = "fantasy_name_to_be_learned.txt";
 	const int   NUM_RESULTS = 100;
 }
 
