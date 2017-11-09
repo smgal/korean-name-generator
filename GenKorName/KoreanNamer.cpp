@@ -13,7 +13,19 @@
 
 namespace
 {
+	static const char _DELIMITER = '$';
+}
+
+namespace
+{
 	typedef unsigned int uint;
+
+	std::vector<std::string> SMGAL[3] =
+	{
+		{ "r","R","s","e","E","f","a","q","Q","t","T","d","w","W","c","z","x","v","g" },
+		{ "k","o","i","O","j","p","u","P","h","hk","ho","hl","y","n","nj","np","nl","b","m","ml","l" },
+		{ "_","r","R","rt","s","sw","sg","e","f","fr","fa","fq","ft","fx","fv","fg","a","q","qt","t","T","d","w","c","z","x","v","g" }
+	};
 
 	std::string _convKorToEng(const std::string& kor)
 	{
@@ -34,13 +46,6 @@ namespace
 			assert(code >= 0xAC00 && code <= 0xD7A3);
 
 			{
-				std::vector<std::string> SMGAL[3] =
-				{
-					{ "r","R","s","e","E","f","a","q","Q","t","T","d","w","W","c","z","x","v","g" },
-					{ "k","o","i","O","j","p","u","P","h","hk","ho","hl","y","n","nj","np","nl","b","m","ml","l" },
-					{ "_","r","R","rt","s","sw","sg","e","f","fr","fa","fq","ft","fx","fv","fg","a","q","qt","t","T","d","w","c","z","x","v","g" }
-				};
-
 				// ぁあいぇえぉけげこさざしじすずせぜそぞ
 				const int MAX_SM1 = 19;
 				// ただちぢっつづてでとどなにぬねのはばぱひび
@@ -80,24 +85,69 @@ namespace
 
 		while (p_ch < p_ch_end)
 		{
-			char ch1 = *p_ch;
-			char ch2 = (p_ch + 1 < p_ch_end) ? *p_ch : '$';
-
 			const char* JA_1ST = "rRseEfaqQtTdwWczxvg";
 			const char* JA_1ST_END = JA_1ST + strlen(JA_1ST);
+
+			const char* JA_2ND = "koiOjpuPhynbml";
+			const char* JA_2ND_END = JA_2ND + strlen(JA_2ND);
 
 			switch (state)
 			{
 			case 0:
 				{
-					auto a = std::find(JA_1ST, JA_1ST_END, ch1);
-					SM1 = a - JA_1ST;
+					auto ix = std::find(JA_1ST, JA_1ST_END, *p_ch++);
+					SM1 = ix - JA_1ST;
 					state++;
 				}
 				break;
 			case 1:
+				{
+					char ch2 = (p_ch + 1 < p_ch_end) ? *(p_ch + 1) : _DELIMITER;
+
+					auto ix1 = std::find(JA_2ND, JA_2ND_END, *p_ch++);
+					auto ix2 = std::find(JA_2ND, JA_2ND_END, ch2);
+
+					std::string s;
+					s += ix1[0]; //
+					if (ix2 < JA_2ND_END)
+					{
+						s += ix2[0];
+						p_ch++;
+					}
+
+					auto ix = std::find(SMGAL[1].begin(), SMGAL[1].end(), s);
+					SM2 = ix - SMGAL[1].begin();
+
+					state++;
+				}
 				break;
 			case 2:
+				{
+					char ch1 = *p_ch++;
+
+					SM3 = 0;
+
+					if (ch1 != '_')
+					{
+
+					}
+					state++;
+				}
+				break;
+			case 3:
+				{
+					// uint code = uint(p_ch[0] & 0x0F) << 12 | uint(p_ch[1] & 0x3F) << 6 | uint(p_ch[2] & 0x3F);
+					// xxxx1111 xx111122 xx222222
+					// 11111111 22222222
+
+					uint code = 0xAC00 + 28 * 21 * SM1 + 28 * SM2 + SM3;
+
+					result += (unsigned char)(0xE0 | ((code >> 12) & 0xF));
+					result += (unsigned char)(0x80 | ((code >> 6) & 0x3F));
+					result += (unsigned char)(0x80 | ((code >> 0) & 0x3F));
+
+					state = 0;
+				}
 				break;
 			default:
 				assert(false);
@@ -114,7 +164,6 @@ namespace
 struct _KoreanNamer
 {
 	static const int  _ORDER = 3;
-	static const char _DELIMITER = '$';
 	static const int  _MAX_LEN = 100;
 
 	struct Ngram
