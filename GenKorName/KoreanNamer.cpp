@@ -13,7 +13,7 @@
 
 namespace
 {
-	static const char _DELIMITER = '$';
+	static const char _END_MARK = '$';
 }
 
 namespace
@@ -102,7 +102,7 @@ namespace
 				break;
 			case 1:
 				{
-					char ch2 = (p_ch + 1 < p_ch_end) ? *(p_ch + 1) : _DELIMITER;
+					char ch2 = (p_ch + 1 < p_ch_end) ? *(p_ch + 1) : _END_MARK;
 
 					auto ix1 = std::find(JA_2ND, JA_2ND_END, *p_ch++);
 					auto ix2 = std::find(JA_2ND, JA_2ND_END, ch2);
@@ -197,7 +197,7 @@ struct _KoreanNamer
 			if (p_text_->size() < _ORDER)
 				continue;
 
-			std::string text = *p_text_ + _DELIMITER;
+			std::string text = *p_text_ + _END_MARK;
 			assert(text.size() > _ORDER);
 
 			for (int j = 0; j < text.size() - _ORDER; j++)
@@ -253,7 +253,7 @@ struct _KoreanNamer
 			assert(result.size() > 0);
 		}
 
-		while (*result.rbegin() != _DELIMITER)
+		while (*result.rbegin() != _END_MARK)
 		{
 			auto p_ngram_map = _ngram_map.find(result.substr(result.size() - _ORDER));
 			assert(p_ngram_map != _ngram_map.end());
@@ -277,7 +277,7 @@ struct _KoreanNamer
 		}
 
 		assert(result.size() > 0);
-		assert(*result.rbegin() == _DELIMITER);
+		assert(*result.rbegin() == _END_MARK);
 
 		return result.substr(0, result.size() - 1);
 	}
