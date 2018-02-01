@@ -72,9 +72,6 @@ namespace
 
 	std::string _convEngToKor(const std::string& eng)
 	{
-		return eng;
-
-		// TODO:
 		std::string result;
 
 		const char* p_ch = eng.c_str();
@@ -83,13 +80,13 @@ namespace
 		uint SM1 = 0, SM2 = 0, SM3 = 0;
 		int state = 0;
 
-		while (p_ch < p_ch_end)
+		while (p_ch < p_ch_end || state == 3)
 		{
-			const char* JA_1ST = "rRseEfaqQtTdwWczxvg";
-			const char* JA_1ST_END = JA_1ST + strlen(JA_1ST);
+			static const char* JA_1ST = "rRseEfaqQtTdwWczxvg";
+			static const char* JA_1ST_END = JA_1ST + strlen(JA_1ST);
 
-			const char* JA_2ND = "koiOjpuPhynbml";
-			const char* JA_2ND_END = JA_2ND + strlen(JA_2ND);
+			static const char* JA_2ND = "koiOjpuPhynbml";
+			static const char* JA_2ND_END = JA_2ND + strlen(JA_2ND);
 
 			switch (state)
 			{
@@ -124,13 +121,15 @@ namespace
 			case 2:
 				{
 					char ch1 = *p_ch++;
+					char ch2 = (p_ch < p_ch_end) ? *p_ch : _END_MARK;
 
 					SM3 = 0;
 
 					if (ch1 != '_')
 					{
-
+						// TODO: 종성 부분을 추가해야 함
 					}
+
 					state++;
 				}
 				break;
