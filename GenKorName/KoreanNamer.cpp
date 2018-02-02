@@ -120,14 +120,32 @@ namespace
 				break;
 			case 2:
 				{
-					char ch1 = *p_ch++;
-					char ch2 = (p_ch < p_ch_end) ? *p_ch : _END_MARK;
-
 					SM3 = 0;
+					char ch1 = *p_ch++;
 
 					if (ch1 != '_')
 					{
-						// TODO: 종성 부분을 추가해야 함
+						auto ix1 = std::find(JA_1ST, JA_1ST_END, ch1);
+
+						if (ix1 != JA_1ST_END)
+						{
+							std::string s;
+							s += ix1[0];
+
+							char ch2 = ((p_ch + 0) < p_ch_end) ? *(p_ch + 0) : _END_MARK;
+							char ch3 = ((p_ch + 1) < p_ch_end) ? *(p_ch + 1) : _END_MARK;
+
+							// JONGSUNG exists and doubleton
+							if (ch2 != _END_MARK && std::find(JA_2ND, JA_2ND_END, ch3) == JA_2ND_END)
+							{
+								auto ix2 = std::find(JA_1ST, JA_1ST_END, ch2);
+								s += ix2[0];
+								p_ch++;
+							}
+
+							auto ix = std::find(SMGAL[2].begin(), SMGAL[2].end(), s);
+							SM3 = (ix != SMGAL[2].end()) ? (ix - SMGAL[2].begin()) : 0;
+						}
 					}
 
 					state++;

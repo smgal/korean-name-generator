@@ -20,7 +20,16 @@ namespace
 
 int _getTestRandom(int n)
 {
-	return n-1;
+	static int s_is_first = true;
+	static int s_seed = 0;
+
+	if (s_is_first)
+	{
+		srand(s_seed);
+		s_is_first = false;
+	}
+
+	return rand() % n;
 }
 
 int main(void)
@@ -33,7 +42,13 @@ int main(void)
 
 	for (int i = 0; i < NUM_RESULTS; i++)
 	{
+#if 1
 		std::string name = namer->nameSomeone(sm::getRandom);
+#else
+		// with the random function in Test case
+		std::string name = namer->nameSomeone(_getTestRandom);
+#endif
+
 		bool not_found = std::find(text_list.begin(), text_list.end(), name) == text_list.end();
 
 #if defined(_MSC_VER)
